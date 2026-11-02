@@ -13,7 +13,7 @@ app.listen(PORT, () => {
 
 db.sequelize.sync()
     .then((result) => {
-        app.listen(PORT, () => {
+        app.listen(3000, () => {
             console.log(`Server started`);
         });
     })
@@ -37,5 +37,22 @@ app.get("/komik", async (req, res) => {
         res.send(komik);
     } catch (err) {
         res.send(err);
+    }
+});
+
+app.put("/komik/:id", async (req, res) => {
+    const id = req.params.id;
+    const data = req.body;
+
+    try {
+        const komik = await db.Komik.findByPk(id);
+        if (!komik) {
+            return res.status(404).send({ message: "Komik tidak ditemukan" });
+        }
+
+        await komik.update(data);
+        res.send({ message: "Komik berhasil diupdate", komik });
+    } catch (err) {
+        res.status(500).send(err);
     }
 });
